@@ -42,7 +42,7 @@
                                 <td width="150" style="line-height:27px;">Testing Mode</td>
                                 <td>
                                     <input type="checkbox" name="is_test" value="1" <?php if((get_option('is_test'))!="") {?> checked="checked" <?php } ?>  />
-                                    <span>Check this if you want to enable testing mode </span>
+                                    <span>This enables the PayPal Sandbox. When testing, you need to checkout with a Sandbox Account.</span>
                                 </td>
                             </tr>
                             <tr>
