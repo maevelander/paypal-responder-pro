@@ -42,7 +42,7 @@ error_reporting(0);
 
 				$subject					=	$_POST['subject'];
 
-				$message_body				=	$_POST['message_body'];
+				$message_body				= stripcslashes($_POST['message_body']);
 
 				$att_name                   =   $_FILES["file"]["name"];
 
@@ -168,7 +168,7 @@ error_reporting(0);
 
 				$subject					=	$_POST['subject'];
 
-				$message_body				=	$_POST['message_body'];
+				$message_body				= stripslashes($_POST['message_body']);
 
 				$att_name                   =   $_FILES["file"]["name"];
 				
