@@ -4,7 +4,7 @@ Plugin Name: PayPal Responder Pro
 Plugin URI: http://www.enigmaplugins.com
 Description: A really simple PayPal plugin. It processes payment for a product via PayPal, then sends an email responder to the customer and returns them to a URL of your choice. That's it.
 Author: Enigma Plugins
-Version: 1.0.2
+Version: 1.0.3
 Author URI: http://www.enigmaplugins.com
 */
 
@@ -35,7 +35,7 @@ if( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
 $license_key = trim( get_option( 'pp_pro_license_key' ) );
 // setup the updater
 $edd_updater = new EDD_SL_Plugin_Updater( PP_PRO_STORE_URL, __FILE__, array( 
-                        'version' 	=> '1.0.2', 				// current version number
+                        'version' 	=> '1.0.3', 				// current version number
                         'license' 	=> $license_key, 		// license key (used get_option above to retrieve from DB)
                         'item_name' => PP_PRO_ITEM_NAME, 	// name of this plugin
                         'author' 	=> 'Enigma Plugins'  // author of this plugin
