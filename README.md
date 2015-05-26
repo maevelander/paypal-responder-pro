@@ -6,6 +6,9 @@ PayPal Responder Pro plugin for WordPress
 Changelog
 -------
 
+**1.0.4**
+* EDD Updater Classes and Functions issue fixed
+
 **1.0.3**
 * Fixed functionality for handling apostrophe 
 
