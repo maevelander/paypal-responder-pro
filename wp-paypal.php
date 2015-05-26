@@ -4,7 +4,7 @@ Plugin Name: PayPal Responder Pro
 Plugin URI: http://www.enigmaplugins.com
 Description: A really simple PayPal plugin. It processes payment for a product via PayPal, then sends an email responder to the customer and returns them to a URL of your choice. That's it.
 Author: Enigma Plugins
-Version: 1.0.3
+Version: 1.0.4
 Author URI: http://www.enigmaplugins.com
 */
 
@@ -23,128 +23,142 @@ function wp_paypal_menu() {
 }
 
 // this is the URL our updater / license checker pings. This should be the URL of the site with EDD installed
-define( 'PP_PRO_STORE_URL', 'http://enigmaplugins.com' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
+define( 'PP_PRO_STORE_URL', 'http://enigmaplugins.com' );
+// you should use your own CONSTANT name, and be sure to replace it throughout this file
+
 // the name of your product. This should match the download name in EDD exactly
 define( 'PP_PRO_ITEM_NAME', 'Paypal Responder Pro' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
+
 if( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
     // load our custom updater
     include( dirname( __FILE__ ) . '/paypal_updater.php' );
 }
 
-// retrieve our license key from the DB
-$license_key = trim( get_option( 'pp_pro_license_key' ) );
-// setup the updater
-$edd_updater = new EDD_SL_Plugin_Updater( PP_PRO_STORE_URL, __FILE__, array( 
-                        'version' 	=> '1.0.3', 				// current version number
-                        'license' 	=> $license_key, 		// license key (used get_option above to retrieve from DB)
-                        'item_name' => PP_PRO_ITEM_NAME, 	// name of this plugin
-                        'author' 	=> 'Enigma Plugins'  // author of this plugin
-                    )
-                );
+function pp_plugin_updater() {
+    // retrieve our license key from the DB
+    $license_key = trim( get_option( 'pp_pro_license_key' ) );
+
+    // setup the updater
+    $edd_updater = new EDD_SL_Plugin_Updater( PP_PRO_STORE_URL, __FILE__, array(
+                    'version' 	=> '1.0.4', 				// current version number
+                    'license' 	=> $license_key, 		// license key (used get_option above to retrieve from DB)
+                    'item_name' => PP_PRO_ITEM_NAME, 	// name of this plugin
+                    'author' 	=> 'Enigma Plugins'  // author of this plugin
+            )
+    );
+}
+add_action( 'admin_init', 'pp_plugin_updater', 0 );
+
+
 /************************************
 * the code below is just a standard
-* options page. Substitute with 
+* options page. Substitute with
 * your own.
 *************************************/
+
 function pp_pro_license_page() {
-    $license 	=   get_option( 'pp_pro_license_key' );
-    $status 	=   get_option( 'pp_pro_license_status' );
+    $license 	= get_option( 'pp_pro_license_key' );
+    $status 	= get_option( 'pp_pro_license_status' );
 ?>
     <div class="wrap">
         <h2><?php _e('Plugin License Options'); ?></h2>
-        <p><strong>Please enter and activate your license key in order to receive automatic updates and support for this plugin</strong></p>
-        <form method="post" action="options.php">
-            <?php settings_fields('pp_pro_license'); ?>
+        <p>
+            <strong>Please enter and activate your license key in order to receive automatic updates and support for this plugin</strong>
+        </p>
+	<form method="post" action="options.php">
+	<?php settings_fields('pp_pro_license'); ?>
             <table class="form-table">
                 <tbody>
-                    <tr valign="top">	
+                    <tr valign="top">
                         <th scope="row" valign="top">
                             <?php _e('License Key'); ?>
                         </th>
                         <td>
                             <input id="pp_pro_license_key" name="pp_pro_license_key" type="text" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
                             <label class="description" for="pp_pro_license_key"><?php _e('Enter your license key'); ?></label>
-			</td>
+                        </td>
                     </tr>
-            <?php
-                if( false !== $license ) {
-            ?>
-                    <tr valign="top">	
-			<th scope="row" valign="top">
+                <?php
+                    if( false !== $license ) { ?>
+                    <tr valign="top">
+                        <th scope="row" valign="top">
                             <?php _e('Activate License'); ?>
-			</th>
-			<td>
+                        </th>
+                        <td>
                     <?php
                         if( $status !== false && $status == 'valid' ) {
                     ?>
-                            <span style="color:green;"><?php _e('active'); ?></span>
-                            <?php wp_nonce_field( 'pp_pro_nonce', 'pp_pro_nonce' ); ?>
-                            <input type="submit" class="button-secondary" name="pp_pro_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
+                        <span style="color:green;"><?php _e('active'); ?></span>
+                        <?php wp_nonce_field( 'edd_sample_nonce', 'edd_sample_nonce' ); ?>
+                        <input type="submit" class="button-secondary" name="pp_pro_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
                     <?php
                         } else {
-                            wp_nonce_field( 'pp_pro_nonce', 'pp_pro_nonce' ); ?>
-                            <input type="submit" class="button-secondary" name="pp_pro_license_activate" value="<?php _e('Activate License'); ?>"/>
-                    <?php
-                        }
+                        wp_nonce_field( 'pp_pro_nonce', 'pp_pro_nonce' );
                     ?>
+                        <input type="submit" class="button-secondary" name="pp_pro_license_activate" value="<?php _e('Activate License'); ?>"/>
+                    <?php } ?>
                         </td>
                     </tr>
-            <?php
-                }
-            ?>
-		</tbody>
-            </table>	
+                <?php } ?>
+                </tbody>
+            </table>
             <?php submit_button(); ?>
-	</form>
+
+        </form>
 <?php
 }
+
 function pp_pro_register_option() {
     // creates our settings in the options table
     register_setting('pp_pro_license', 'pp_pro_license_key', 'pp_sanitize_license' );
 }
-
 add_action('admin_init', 'pp_pro_register_option');
+
 function pp_sanitize_license( $new ) {
     $old = get_option( 'pp_pro_license_key' );
     if( $old && $old != $new ) {
-    	delete_option( 'pp_pro_license_status' ); // new license has been entered, so must reactivate
+        delete_option( 'pp_pro_license_status' ); // new license has been entered, so must reactivate
     }
     return $new;
 }
 
 /************************************
-* this illustrates how to activate 
+* this illustrates how to activate
 * a license key
 *************************************/
+
 function pp_pro_activate_license() {
     // listen for our activate button to be clicked
     if( isset( $_POST['pp_pro_license_activate'] ) ) {
-        // run a quick security check 
-	if( ! check_admin_referer( 'pp_pro_nonce', 'pp_pro_nonce' ) ) 	
+
+        // run a quick security check
+        if( ! check_admin_referer( 'pp_pro_nonce', 'pp_pro_nonce' ) )
             return; // get out if we didn't click the Activate button
-	
+
         // retrieve the license from the database
-	$license = trim( get_option( 'pp_pro_license_key' ) );
-		
-	// data to send in our API request
-	$api_params = array( 
-                            'edd_action'=> 'activate_license', 
-                            'license' 	=> $license, 
-                            'item_name' => urlencode( PP_PRO_ITEM_NAME ) // the name of our product in EDD
-                        );
-		
+        $license = trim( get_option( 'pp_pro_license_key' ) );
+
+        // data to send in our API request
+        $api_params = array(
+                'edd_action'=> 'activate_license',
+                'license' 	=> $license,
+                'item_name' => urlencode( PP_PRO_ITEM_NAME ), // the name of our product in EDD
+                'url'       => home_url()
+        );
+
         // Call the custom API.
-        $response = wp_remote_get( add_query_arg( $api_params, PP_PRO_STORE_URL ), array( 'timeout' => 15, 'sslverify' => false ) );
-        
-	// make sure the response came back okay
-	if ( is_wp_error( $response ) )
-            return false;
-        
-	// decode the license data
-	$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-		
-	// $license_data->license will be either "active" or "inactive"
-	update_option( 'pp_pro_license_status', $license_data->license );
+        $response = wp_remote_post( PP_PRO_STORE_URL, array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+
+        // make sure the response came back okay
+        if ( is_wp_error( $response ) )
+                return false;
+
+        // decode the license data
+        $license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+        // $license_data->license will be either "valid" or "invalid"
+
+        update_option( 'pp_pro_license_status', $license_data->license );
     }
 }
 add_action('admin_init', 'pp_pro_activate_license');
@@ -153,73 +167,82 @@ add_action('admin_init', 'pp_pro_activate_license');
 * Illustrates how to deactivate a license key.
 * This will descrease the site count
 ***********************************************/
+
 function pp_pro_deactivate_license() {
+
     // listen for our activate button to be clicked
     if( isset( $_POST['pp_pro_license_deactivate'] ) ) {
-        // run a quick security check 
-	if( ! check_admin_referer( 'pp_pro_nonce', 'pp_pro_nonce' ) ) 	
+
+        // run a quick security check
+        if( ! check_admin_referer( 'pp_pro_nonce', 'pp_pro_nonce' ) )
             return; // get out if we didn't click the Activate button
-	
+
         // retrieve the license from the database
-	$license = trim( get_option( 'pp_pro_license_key' ) );
-			
-	// data to send in our API request
-	$api_params = array( 
-                            'edd_action'=> 'deactivate_license', 
-                            'license' 	=> $license, 
-                            'item_name' => urlencode( PP_PRO_ITEM_NAME ) // the name of our product in EDD
-                        );
-		
+        $license = trim( get_option( 'pp_pro_license_key' ) );
+
+        // data to send in our API request
+        $api_params = array(
+                'edd_action'=> 'deactivate_license',
+                'license' 	=> $license,
+                'item_name' => urlencode( PP_PRO_ITEM_NAME ), // the name of our product in EDD
+                'url'       => home_url()
+        );
+
         // Call the custom API.
-	$response = wp_remote_get( add_query_arg( $api_params, PP_PRO_STORE_URL ), array( 'timeout' => 15, 'sslverify' => false ) );
-	
+        $response = wp_remote_post( PP_PRO_STORE_URL, array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+
         // make sure the response came back okay
-	if ( is_wp_error( $response ) )
+        if ( is_wp_error( $response ) )
             return false;
-	
+
         // decode the license data
-            $license_data = json_decode( wp_remote_retrieve_body( $response ) );
-		
-	// $license_data->license will be either "deactivated" or "failed"
-	if( $license_data->license == 'deactivated' )
+        $license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+        // $license_data->license will be either "deactivated" or "failed"
+        if( $license_data->license == 'deactivated' )
             delete_option( 'pp_pro_license_status' );
     }
 }
 add_action('admin_init', 'pp_pro_deactivate_license');
 
 /************************************
-* this illustrates how to check if 
+* this illustrates how to check if
 * a license key is still valid
 * the updater does this for you,
 * so this is only needed if you
 * want to do something custom
 *************************************/
+
 function pp_pro_check_license() {
+
     global $wp_version;
+
     $license = trim( get_option( 'pp_pro_license_key' ) );
-	
-    $api_params = array( 
-                        'edd_action' => 'check_license', 
-                        'license' => $license, 
-                        'item_name' => urlencode( PP_PRO_ITEM_NAME ) 
-                    );
-	
+
+    $api_params = array(
+            'edd_action'    => 'check_license',
+            'license'       => $license,
+            'item_name'     => urlencode( PP_PRO_ITEM_NAME ),
+            'url'           => home_url()
+    );
+
     // Call the custom API.
-    $response = wp_remote_get( add_query_arg( $api_params, PP_PRO_STORE_URL ), array( 'timeout' => 15, 'sslverify' => false ) );
-    
+    $response = wp_remote_post( PP_PRO_STORE_URL, array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+
     if ( is_wp_error( $response ) )
-	return false;
-    
+        return false;
+
     $license_data = json_decode( wp_remote_retrieve_body( $response ) );
-    
+
     if( $license_data->license == 'valid' ) {
-    	echo 'valid'; exit;
-	// this license is still valid
+        echo 'valid'; exit;
+        // this license is still valid
     } else {
-	echo 'invalid'; exit;
-	// this license is no longer valid
+        echo 'invalid'; exit;
+        // this license is no longer valid
     }
 }
+
 add_filter('widget_text', 'do_shortcode');
 
 add_action('admin_enqueue_scripts','wp_payapl_admin_scripts');
