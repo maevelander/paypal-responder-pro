@@ -4,7 +4,7 @@ Plugin Name: PayPal Responder Pro
 Plugin URI: http://www.enigmaplugins.com
 Description: A really simple PayPal plugin. It processes payment for a product via PayPal, then sends an email responder to the customer and returns them to a URL of your choice. That's it.
 Author: Enigma Plugins
-Version: 1.0.4
+Version: 1.0.5
 Author URI: http://www.enigmaplugins.com
 */
 
@@ -40,7 +40,7 @@ function pp_plugin_updater() {
 
     // setup the updater
     $edd_updater = new EDD_SL_Plugin_Updater( PP_PRO_STORE_URL, __FILE__, array(
-                    'version' 	=> '1.0.4', 				// current version number
+                    'version' 	=> '1.0.5', 				// current version number
                     'license' 	=> $license_key, 		// license key (used get_option above to retrieve from DB)
                     'item_name' => PP_PRO_ITEM_NAME, 	// name of this plugin
                     'author' 	=> 'Enigma Plugins'  // author of this plugin
@@ -302,41 +302,42 @@ function wp_paypal_product($atts){
     $upload_image	=	get_option('upload_image');
     $email_subject	=	get_option('email_subject');
     $email_message	=	get_option('email_message');
+    $rand = rand(0,1000);
     
     if(!$upload_image){
 	$upload_image	=	'http://www.paypalobjects.com/en_US/i/btn/btn_buynow_LG.gif';	
     }
     
     if((get_option('is_test'))=="1"){
-        $output	=   '<form name="_xclick" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+        $output	=   '<form oncontextmenu="return false" name="_xclick" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_blank">
                             <input type="hidden" name="cmd" value="_xclick">
                             <input type="hidden" name="business" value="'.$paypalID.'">
                             <input type="hidden" name="return" value="'.$return_url.'">
                             <input type="hidden" name="currency_code" value="'.$currency.'">
                             <input type="hidden" name="item_name" value="'.$product_name.'">
-                            <input type="hidden" name="amount" id="p'.$product_id.'" value="'.$product_price.'">
+                            <input type="hidden" name="amount" id="p'.$product_id.$rand.'" value="'.$product_price.'">
                             <input type="hidden" name="custom" value="'.$responderID.'">
                             <input name="notify_url" value="'.plugin_dir_url( __FILE__ ).'ipn_sandbox.php" type="hidden">
                             <input type="image" src="'.$upload_image.'" border="0" name="submit" alt="Make payments with PayPal - its fast, free and secure!"> 
                         </form>';
 
-        $output .= "<script>jQuery(document).ready(function(){var a=".$product_price.";jQuery('form[name=_xclick]').submit(function(c){var b=jQuery('input[id=p".$product_id."]').val();if(b==a){return}else{c.preventDefault()}})});</script>";
+        $output .= "<script>jQuery(document).ready(function(){var a=".$product_price.";jQuery('form[name=_xclick]').submit(function(c){var b=jQuery('input[id=p".$product_id.$rand."]').val();if(b==a){return}else{c.preventDefault()}})});</script>";
     }
     
     if((get_option('is_test'))!="1"){
-	$output     =	'<form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+	$output     =	'<form oncontextmenu="return false" name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
                             <input type="hidden" name="cmd" value="_xclick">
                             <input type="hidden" name="business" value="'.$paypalID.'">
                             <input type="hidden" name="return" value="'.$return_url.'">
                             <input type="hidden" name="currency_code" value="'.$currency.'">
                             <input type="hidden" name="item_name" value="'.$product_name.'">
-                            <input type="hidden" name="amount" id="p'.$product_id.'" value="'.$product_price.'">
+                            <input type="hidden" name="amount" id="p'.$product_id.$rand.'" value="'.$product_price.'">
                             <input type="hidden" name="custom" value="'.$responderID.'">
                             <input name="notify_url" value="'.plugin_dir_url( __FILE__ ).'ipn.php" type="hidden">
                             <input type="image" src="'.$upload_image.'" border="0" name="submit" alt="Make payments with PayPal - its fast, free and secure!"> 
 			</form>';
         
-        $output .= "<script>jQuery(document).ready(function(){var a=".$product_price.";jQuery('form[name=_xclick]').submit(function(c){var b=jQuery('input[id=p".$product_id."]').val();if(b==a){return}else{c.preventDefault()}})});</script>";
+        $output .= "<script>jQuery(document).ready(function(){var a=".$product_price.";jQuery('form[name=_xclick]').submit(function(c){var b=jQuery('input[id=p".$product_id.$rand."]').val();if(b==a){return}else{c.preventDefault()}})});</script>";
     }
     
     return $output;		
