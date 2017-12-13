@@ -70,6 +70,7 @@
                                         <option value="NOK" <?php if(get_option('currency')=='NOK'){echo 'selected="selected"';} ?>>Norwegian Krone</option>
                                         <option value="NZD" <?php if(get_option('currency')=='NZD'){echo 'selected="selected"';} ?>>New Zealand Dollar</option>
                                         <option value="PLN" <?php if(get_option('currency')=='PLN'){echo 'selected="selected"';} ?>>Polish Zloty</option>
+					<option value="RUB" <?php if(get_option('currency')=='RUB'){echo 'selected="selected"';} ?>>Russian Rubles</option>
                                         <option value="SEK" <?php if(get_option('currency')=='SEK'){echo 'selected="selected"';} ?>>Swedish Krona</option>
                                         <option value="SGD" <?php if(get_option('currency')=='SGD'){echo 'selected="selected"';} ?>>Singapore Dollar</option>
                                         <option value="USD" <?php if(get_option('currency')=='USD'){echo 'selected="selected"';} ?>>United States Dollars</option>
